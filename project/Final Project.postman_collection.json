@@ -1,0 +1,206 @@
+{
+    "info": {
+        "_postman_id": "b08d491f-5633-432a-ab52-a817462e6d80",
+        "name": "P5 Udacity",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [{
+            "name": "Get all task group by task group id",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [{
+                        "key": "token",
+                        "value": "{{authToken}}",
+                        "type": "string"
+                    }]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/task-groups",
+                    "protocol": "https",
+                    "host": [
+                        "{{apiId}}",
+                        "execute-api",
+                        "us-east-1",
+                        "amazonaws",
+                        "com"
+                    ],
+                    "path": [
+                        "dev",
+                        "task-groups"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Delete todo",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [{
+                        "key": "token",
+                        "value": "{{authToken}}",
+                        "type": "string"
+                    }]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                    "raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/task-groups/59b33577-b0b8-4594-b545-845b86e61250",
+                    "protocol": "https",
+                    "host": [
+                        "{{apiId}}",
+                        "execute-api",
+                        "us-east-1",
+                        "amazonaws",
+                        "com"
+                    ],
+                    "path": [
+                        "dev",
+                        "task-groups",
+                        "59b33577-b0b8-4594-b545-845b86e61250"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Get attachment URL",
+            "request": {
+                "auth": {
+                    "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "https://serverless-capstone-task-group-images-khoitha-dev.s3.amazonaws.com/59b33577-b0b8-4594-b545-845b86e61250",
+                    "protocol": "https",
+                    "host": [
+                        "serverless-capstone-task-group-images-khoitha-dev",
+                        "s3",
+                        "amazonaws",
+                        "com"
+                    ],
+                    "path": [
+                        "59b33577-b0b8-4594-b545-845b86e61250"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Create task group",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [{
+                        "key": "token",
+                        "value": "{{authToken}}",
+                        "type": "string"
+                    }]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n    \"name\": \"Task group\",\r\n    \"description\": \"Task group description\"\r\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/task-groups",
+                    "protocol": "https",
+                    "host": [
+                        "{{apiId}}",
+                        "execute-api",
+                        "us-east-1",
+                        "amazonaws",
+                        "com"
+                    ],
+                    "path": [
+                        "dev",
+                        "task-groups"
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "Update task group",
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [{
+                        "key": "token",
+                        "value": "{{authToken}}",
+                        "type": "string"
+                    }]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n    \"name\": \"Updated\",\r\n    \"description\": \"2023-03-28\"\r\n}",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    }
+                },
+                "url": {
+                    "raw": "https://{{apiId}}.execute-api.us-east-1.amazonaws.com/dev/task-groups/59b33577-b0b8-4594-b545-845b86e61250",
+                    "protocol": "https",
+                    "host": [
+                        "{{apiId}}",
+                        "execute-api",
+                        "us-east-1",
+                        "amazonaws",
+                        "com"
+                    ],
+                    "path": [
+                        "dev",
+                        "task-groups",
+                        "59b33577-b0b8-4594-b545-845b86e61250"
+                    ]
+                }
+            },
+            "response": []
+        }
+    ],
+    "event": [{
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [{
+            "key": "apiId",
+            "value": "jhwde0qxo5",
+            "type": "default"
+        },
+        {
+            "key": "authToken",
+            "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InBwc0xRU3UwSWJkUS1pRjBRdDhyWCJ9.eyJpc3MiOiJodHRwczovL2Rldi11NWcyamp0ZGF3eHoyeWJrLnVzLmF1dGgwLmNvbS8iLCJhdWQiOiJkdzhyR3VDTmpXNGNNZTR5ejZ0YUpGdmpQUzJ0THJ1byIsImlhdCI6MTY3OTk2NjY3MiwiZXhwIjoxNjgwMDAyNjcyLCJzdWIiOiJhdXRoMHw2NDEwMWM4ZGRlZjk4YzIxNzg4ZGFhMjIiLCJhdF9oYXNoIjoiVU9NZkdGV2FHYjQtbFNRMU52RGlTQSIsInNpZCI6IktUdkFhR2hWaVdLVnZCalRYWHVJMHFOUFpzYzBVUERCIiwibm9uY2UiOiI0aUZkUkVIMTd1RFRnUngwTjBTMDg3RzliMEVfTEtldyJ9.AKpiGFnANt7nSTvVRryzcNfzRF5D05Vn7hctJsKJcWKg68gBTOFYbPFD1YbtGwSdqnHAjeC5ru0uQZPT6QwJqeaSkT-U8fPlOnnBX3aTO5cirqUKKKme_SAQdj7SYKNyli5SQwWoyCmJWEeR591VgIyOD83ORfk_g700W_gU-xr281geED84aIsgEuQ0shMmsX93lIl4lhxY-RlDxGZGDI1BUPVwRmD_sO59sabdSZa5LHhhtAgvgegyRD533kHKY8Txk8tDx6zJPHu_qbYHQqR0xj3EZxeJVI7A2sdeeeNoua36KZWR7INGagwA9RJjJ8B78eTcWxQ4BILYOVj2dw",
+            "type": "default"
+        }
+    ]
+}
