@@ -10,7 +10,7 @@ export class TaskGroupAccess {
 
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
-    private readonly taskGroupTable = process.env.RESEARCH_GROUP_TABLE) {
+    private readonly taskGroupTable = process.env.TASK_GROUP_TABLE) {
   }
 
   async deleteTaskGroupById(taskGroupId: string, userId: string) {

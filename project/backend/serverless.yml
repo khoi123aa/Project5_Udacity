@@ -1,7 +1,5 @@
-# TODO: Change the name of the org 
-org: khoitha
-app: serverless-todo-app
-service: serverless-todo-app
+app: serverless-task-app
+service: serverless-task-app
 frameworkVersion: 3.33.0
 
 plugins:
@@ -9,7 +7,6 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
   - serverless-reqvalidator-plugin
-  # - serverless-aws-documentation
 
 provider:
   name: aws
@@ -27,9 +24,10 @@ provider:
   # Use these variables in the functions and resouorces section below. For example, 
   # ${self:provider.environment.ATTACHMENT_S3_BUCKET}
   environment:
-    TODOS_TABLE: P4-Todos-${self:provider.stage}
-    TODOS_CREATED_AT_INDEX: CreatedAtIndex
-    ATTACHMENT_S3_BUCKET: khoitha-c4-todo-images-${self:provider.stage}
+    TASK_GROUP_TABLE: P5-Task-Group-${self:provider.stage}
+    TASK_GROUP_CREATED_AT_INDEX: CreatedAtIndex
+    TASK_GROUP_TABLE_GSI: userIdGSI
+    ATTACHMENT_S3_BUCKET: khoitha-c5-task-images-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
   logs:
@@ -43,24 +41,25 @@ functions:
 
   # TODO: Configure this function - 
   # Provide iamRoleStatements property for performing Actions on DynamoDB
-  GetTodos:
-      handler: src/lambda/http/getTodos.handler
-      events:
-        - http:
-            method: get
-            path: todos
-            cors: true
-            authorizer: Auth
-      iamRoleStatements:
-      - Effect: Allow
+  GetTaskGroup:
+    handler: src/lambda/http/getTaskGroups.handler
+    events:
+      - http:
+          method: get
+          path: task-groups
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+    -   Effect: Allow
         Action:
           - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
-      - Effect: Allow
-        Action:
-          - dynamodb:Query
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_CREATED_AT_INDEX}
-      - Effect: Allow
+          - dynamodb:Scan
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TASK_GROUP_TABLE}
+    -   Effect: Allow
         Action:
           - xray:PutTraceSegments
           - xray:PutTelemetryRecords
@@ -71,48 +70,50 @@ functions:
   # Provide iamRoleStatements property. Decide the Actions and AWS Resource. 
   # To refer to an AWS resource defined in the "Resources" section, you can use "Resource: !GetAtt <resource-name>.Arn"
   # To validate incoming HTTP requests, we have provided the request schemas in function definition below. 
-  CreateTodo:
-    handler: src/lambda/http/createTodo.handler
+  CreateTaskGroup:
+    handler: src/lambda/http/createTaskGroup.handler
     events:
       - http:
           method: post
-          path: todos
+          path: task-groups
           cors: true
           authorizer: Auth
           request:
             schemas:
-              application/json: ${file(models/create-todo-model.json)}
+              application/json: ${file(models/create-task-group-model.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:PutItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TASK_GROUP_TABLE}
       - Effect: Allow
         Action:
           - xray:PutTraceSegments
-          - - xray:PutTelemetryRecords
+          - xray:PutTelemetryRecords
         Resource:
           - "*"
 
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements, and request schemas
-  UpdateTodo:
-    handler: src/lambda/http/updateTodo.handler
+  UpdateTaskGroup:
+    handler: src/lambda/http/updateTaskGroup.handler
     events:
       - http:
           method: patch
-          path: todos/{todoId}
+          path: task-groups/{taskGroupId}
           cors: true
           authorizer: Auth
           request:
             schemas:
-              application/json: ${file(models/update-todo-model.json)}
+              application/json: ${file(models/update-task-group-model.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:GetItem
           - dynamodb:UpdateItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TASK_GROUP_TABLE}
       - Effect: Allow
         Action:
           - xray:PutTraceSegments
@@ -122,20 +123,22 @@ functions:
 
   # TODO: Configure this function
   # Provide property for setting up CORS, Authorizer, iamRoleStatements
-  DeleteTodo:
-    handler: src/lambda/http/deleteTodo.handler
+  DeleteTaskGroup:
+    handler: src/lambda/http/deleteTaskGroup.handler
     events:
       - http:
           method: delete
-          path: todos/{todoId}
+          path: task-groups/{taskGroupId}
           cors: true
           authorizer: Auth
     iamRoleStatements:
       - Effect: Allow
         Action:
+          - dynamodb:PutItem
+          - dynamodb:UpdateItem
           - dynamodb:GetItem
           - dynamodb:DeleteItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TASK_GROUP_TABLE}
       - Effect: Allow
         Action:
           - xray:PutTraceSegments
@@ -150,19 +153,16 @@ functions:
     events:
       - http:
           method: post
-          path: todos/{todoId}/attachment
+          path: task-groups/{taskGroupId}/attachment
           cors: true
           authorizer: Auth
     iamRoleStatements:
       - Effect: Allow
         Action:
+          - dynamodb:Query
           - dynamodb:UpdateItem
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
-      # - Effect: Allow
-      #   Action:
-      #     - s3:PutObject
-      #   Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TASK_GROUP_TABLE}
       - Effect: Allow
         Action:
           - xray:PutTraceSegments
@@ -197,32 +197,28 @@ resources:
           Ref: ApiGatewayRestApi
     
     # TODO: Create a DynamoDB table with local secondary index and a composite key
-    TodosTable:
+    TaskGroupTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:provider.environment.TODOS_TABLE}
+        TableName: ${self:provider.environment.TASK_GROUP_TABLE}
         AttributeDefinitions:
-            - AttributeName: userId
-              AttributeType: S
-            - AttributeName: todoId
-              AttributeType: S
-            - AttributeName: createdAt
-              AttributeType: S
+          - AttributeName: taskGroupId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
         KeySchema:
-            - AttributeName: userId
-              KeyType: HASH
-            - AttributeName: todoId
-              KeyType: RANGE
+          - AttributeName: taskGroupId
+            KeyType: HASH
+          - AttributeName: userId
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
-        LocalSecondaryIndexes:
-            - IndexName: ${self:provider.environment.TODOS_CREATED_AT_INDEX}
-              KeySchema:
-                - AttributeName: userId
-                  KeyType: HASH
-                - AttributeName: createdAt
-                  KeyType: RANGE
-              Projection:
-                ProjectionType: ALL
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.TASK_GROUP_TABLE_GSI}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
 
     # TODO: Complete the bucket properties below. 
     # Do not forget to add the CorsConfiguration propoerty

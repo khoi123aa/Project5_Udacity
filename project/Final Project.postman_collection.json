@@ -5,7 +5,7 @@
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [{
-            "name": "Get all task group by task group id",
+            "name": "Get task",
             "request": {
                 "auth": {
                     "type": "bearer",
@@ -36,7 +36,7 @@
             "response": []
         },
         {
-            "name": "Delete todo",
+            "name": "Delete task",
             "request": {
                 "auth": {
                     "type": "bearer",
@@ -76,10 +76,10 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                    "raw": "https://serverless-capstone-task-group-images-khoitha-dev.s3.amazonaws.com/59b33577-b0b8-4594-b545-845b86e61250",
+                    "raw": "https://khoitha-c5-task-images-dev.s3.amazonaws.com/59b33577-b0b8-4594-b545-845b86e61250",
                     "protocol": "https",
                     "host": [
-                        "serverless-capstone-task-group-images-khoitha-dev",
+                        "khoitha-c5-task-images-dev",
                         "s3",
                         "amazonaws",
                         "com"
@@ -92,7 +92,7 @@
             "response": []
         },
         {
-            "name": "Create task group",
+            "name": "Create task",
             "request": {
                 "auth": {
                     "type": "bearer",
@@ -132,7 +132,7 @@
             "response": []
         },
         {
-            "name": "Update task group",
+            "name": "Update task",
             "request": {
                 "auth": {
                     "type": "bearer",

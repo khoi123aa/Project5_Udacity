@@ -1,10 +1,7 @@
-import dateFormat from 'dateformat'
 import { History } from 'history'
-import update from 'immutability-helper'
 import * as React from 'react'
 import {
   Button,
-  Checkbox,
   Divider,
   Grid,
   Header,
@@ -52,7 +49,6 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
 
   onTaskGroupCreate = async () => {
     try {
-      // const dueDate = this.calculateDueDate()
       const newTaskGroup = await createTaskGroup(this.props.auth.getIdToken(), {
         name: this.state.newTaskGroupName,
         description: this.state.newDescription
@@ -81,6 +77,7 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
   async componentDidMount() {
     try {
       const taskGroups = await getTaskGroups(this.props.auth.getIdToken())
+      console.log()
       this.setState({
         taskGroups,
         loadingTaskGroups: false
@@ -93,7 +90,7 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
   render() {
     return (
       <div>
-        <Header as="h1">RESEARCH GROUPS</Header>
+        <Header as="h1">TASK GROUPS</Header>
 
         {this.renderCreateTaskGroupInput()}
 
@@ -108,7 +105,7 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
         <Grid.Column width={16} style={{ marginBottom: 10 }}>
           <Input
             fluid
-            placeholder="Group name"
+            placeholder="Task name"
             onChange={this.handleNameChange}
           />
 
@@ -116,13 +113,13 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
         <Grid.Column width={16} style={{ marginBottom: 10 }}>
           <Input
             fluid
-            placeholder="Group description"
+            placeholder="Task description"
             onChange={this.handleDescriptionChange}
           />
         </Grid.Column>
         <Grid.Column width={16}>
-          <Button color='green' onClick={() => this.onTaskGroupCreate()}>
-            SAVE GROUP
+          <Button color='blue' onClick={() => this.onTaskGroupCreate()}>
+            CREATE
           </Button>
         </Grid.Column>
 
@@ -145,7 +142,7 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
     return (
       <Grid.Row>
         <Loader indeterminate active inline="centered">
-          Loading RESEARCHGROUPs
+          Loading TASKGROUP's
         </Loader>
       </Grid.Row>
     )
@@ -157,12 +154,6 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
         {this.state.taskGroups.map((taskGroup, pos) => {
           return (
             <Grid.Row key={taskGroup.taskGroupId}>
-              {/* <Grid.Column width={1} verticalAlign="middle">
-                <Checkbox
-                  onChange={() => this.onTaskGroupCheck(pos)}
-                  checked={taskGroup.done}
-                />
-              </Grid.Column> */}
               <Grid.Column width={3} verticalAlign="top">
                 <h5>{taskGroup.name}</h5>
               </Grid.Column>
@@ -201,12 +192,5 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
         })}
       </Grid>
     )
-  }
-
-  calculateDueDate(): string {
-    const date = new Date()
-    date.setDate(date.getDate() + 7)
-
-    return dateFormat(date, 'yyyy-mm-dd') as string
   }
 }
