@@ -53,32 +53,54 @@ export const handler = async (
 }
 
 async function verifyToken(authHeader: string): Promise<JwtPayload> {
-  const token = getToken(authHeader)
-  console.log(token)
+  const token = getToken(authHeader);
+  const jwt: Jwt = decode(token, { complete: true }) as Jwt;
 
-  const jwt: Jwt = decode(token, { complete: true }) as Jwt
-  let response = await Axios.get(jwksUrl)
-  console.log(response)
-  let keyList = response.data.keys
-  console.log(keyList)
+  const kid: string = jwt.header.kid;
+  let respon = await Axios.get(jwksUrl);
+  const publicKey: string = await getSigninKeys(respon.data.keys,kid);
 
-  let result = keyList.find(item => {
-    return item.kid == jwt.header.kid
-  });
-  let cert = '-----BEGIN CERTIFICATE-----'+'\n' + result.x5c.toString() + '\n' + '-----END CERTIFICATE-----'
-  console.log(cert)
-
-  return verify(token, cert, { algorithms: ['RS256'] }) as JwtPayload
+  return verify(token, publicKey, { algorithms: ['RS256'] }) as JwtPayload;
 }
 
 function getToken(authHeader: string): string {
-  if (!authHeader) throw new Error('No authentication header')
+  if (!authHeader) throw new Error('No authentication header');
 
   if (!authHeader.toLowerCase().startsWith('bearer '))
-    throw new Error('Invalid authentication header')
+    throw new Error('Invalid authentication header');
 
-  const split = authHeader.split(' ')
-  const token = split[1]
+  const split = authHeader.split(' ');
+  const token = split[1];
 
-  return token
+  return token;
+}
+
+function certToPEM(cert) {
+  cert = cert.match(/.{1,64}/g).join('\n');
+  cert = `-----BEGIN CERTIFICATE-----\n${cert}\n-----END CERTIFICATE-----\n`;
+  return cert;
+}
+
+async function getSigninKeys(keys, kid) {
+  const signinKeys = keys
+      .filter(key => key.use === 'sig' && key.kty === 'RSA' && key.kid && ((key.x5c && key.x5c.length) || (key.n && key.e)))
+      .map(key => {
+        return {
+          kid: key.kid,
+          nbf: key.nbf,
+          publicKey: certToPEM(key.x5c[0])
+        };
+      });
+
+  if (!signinKeys) {
+    throw new Error('The JWKS endpoint did not contain any signing keys');
+  }
+
+  const signingKey = signinKeys.find(key => key.kid === kid);
+
+  if (!signingKey) {
+    throw new Error(`Key not found'${kid}'`);
+  }
+
+  return signingKey.publicKey;
 }

@@ -10,6 +10,7 @@ export class TaskGroupAccess {
 
   constructor(
     private readonly docClient: DocumentClient = createDynamoDBClient(),
+    private readonly taskIndex = process.env.TASK_GROUP_TABLE_GSI,
     private readonly taskGroupTable = process.env.TASK_GROUP_TABLE) {
   }
 
@@ -43,9 +44,10 @@ export class TaskGroupAccess {
 }
 
   async getTaskGroupByUserId(userId: string): Promise<TaskGroupItem[]> {
+    console.log("Called function get task")
     const result = await this.docClient.query({
       TableName: this.taskGroupTable,
-      IndexName: 'userIdGSI',
+      IndexName: this.taskIndex,
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId

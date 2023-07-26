@@ -11,7 +11,7 @@ export class AttachmentUtils {
 
     constructor(
         private readonly bucketName = process.env.ATTACHMENT_S3_BUCKET,
-        private readonly urlExpiration = process.env.SIGNED_URL_EXPIRATION
+        private readonly urlExpiration = parseInt(process.env.SIGNED_URL_EXPIRATION)
     ) { }
 
 
