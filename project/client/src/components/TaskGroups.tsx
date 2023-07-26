@@ -93,7 +93,7 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
         <Header as="h1">TASK GROUPS</Header>
 
         {this.renderCreateTaskGroupInput()}
-
+        {this.renderHeader()}
         {this.renderTaskGroups()}
       </div>
     )
@@ -130,6 +130,33 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
     )
   }
 
+  renderHeader() {
+    return (
+      <Grid padded>
+      <Grid.Row>
+        <Grid.Column width={3} style={{ marginRight: 13 }}>
+          <Header as="h4">Name</Header>
+        </Grid.Column>
+        <Grid.Column width={3} style={{ marginRight: 13 }}>
+          <Header as="h4">Description</Header>
+        </Grid.Column>
+        <Grid.Column width={4} style={{ marginRight: 13 }}>
+          <Header as="h4">Image</Header>
+        </Grid.Column>
+        <Grid.Column width={3} style={{ marginRight: 16 }}>
+          <Header as="h4">Date</Header>
+        </Grid.Column>
+        <Grid.Column width={2}>
+          <Header as="h4">Action</Header>
+        </Grid.Column>
+        <Grid.Column width={16}>
+          <Divider />
+        </Grid.Column>
+      </Grid.Row>
+      </Grid>
+    )
+  }
+
   renderTaskGroups() {
     if (this.state.loadingTaskGroups) {
       return this.renderLoading()
@@ -157,10 +184,15 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
               <Grid.Column width={3} verticalAlign="top">
                 <h5>{taskGroup.name}</h5>
               </Grid.Column>
-              <Grid.Column width={7} floated="right">
+              <Grid.Column width={3} floated="right">
                 {taskGroup.description}
               </Grid.Column>
               <Grid.Column width={4} floated="right">
+                {taskGroup.attachmentUrl && (
+                  <Image src={taskGroup.attachmentUrl} onError={(event: { target: { style: { display: string } } }) => event.target.style.display = 'none'} alt=" This is task image!" size="small" wrapped />
+                )}
+              </Grid.Column>
+              <Grid.Column width={3} floated="right">
                 {taskGroup.createdAt}
               </Grid.Column>
               <Grid.Column width={1} floated="right">
@@ -181,9 +213,6 @@ export class TaskGroups extends React.PureComponent<TaskGroupsProps, TaskGroupsS
                   <Icon name="delete" />
                 </Button>
               </Grid.Column>
-              {taskGroup.attachmentUrl && (
-                <Image src={taskGroup.attachmentUrl} onError={(event: { target: { style: { display: string } } }) => event.target.style.display = 'none'} alt=" This is task image!" size="small" wrapped />
-              )}
               <Grid.Column width={16}>
                 <Divider />
               </Grid.Column>
